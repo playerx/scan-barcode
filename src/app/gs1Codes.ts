@@ -302,10 +302,12 @@ export const gs1Codes = [
   },
   {
     country: 'Finland',
+    flag: '🇫🇮',
     barcode: '640-649',
   },
   {
     country: 'France',
+    flag: '🇫🇷',
     barcode: '300-379',
   },
   {
@@ -449,7 +451,8 @@ export const gs1Codes = [
   },
   {
     country: 'Japan',
-    barcode: '450-459',
+    flag: '🇯🇵',
+    barcode: '450-499',
   },
   {
     country: 'Jordan',
@@ -729,7 +732,8 @@ export const gs1Codes = [
   },
   {
     country: 'Russian Federation',
-    barcode: null,
+    flag: '🇷🇺',
+    barcode: '460-469',
   },
   {
     country: 'Rwanda',
@@ -937,7 +941,7 @@ export const gs1Codes = [
   {
     country: 'United States',
     flag: '🇺🇸',
-    barcode: '000-130',
+    barcode: '000-139',
   },
   {
     country: 'United States Minor Outlying Islands',

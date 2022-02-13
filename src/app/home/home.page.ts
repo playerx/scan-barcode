@@ -36,7 +36,7 @@ export class HomePage implements OnInit {
           return [];
         }
 
-        return new Array(end - start).fill(0).map((_, i) => ({
+        return new Array(end - start + 1).fill(0).map((_, i) => ({
           ...x,
           barcode: (start + i).toString().padStart(3, '0'),
         }));
