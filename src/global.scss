@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -24,3 +24,20 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.scanner-ui {
+  display: none;
+}
+.scanner-hide {
+  visibility: visible;
+}
+
+body.qrscanner {
+  background-color: transparent;
+}
+body.qrscanner .scanner-ui {
+  display: block;
+}
+body.qrscanner .scanner-hide {
+  visibility: hidden;
+}
