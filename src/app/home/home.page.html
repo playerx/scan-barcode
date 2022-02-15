@@ -17,7 +17,14 @@
 
   <main>
     <section *ngIf="isInitialMode">
-      <ion-button class="scan" (click)="scan()" size="large"> Scan </ion-button>
+      <ion-button class="scan" (click)="scan()" size="large">
+        <ion-icon
+          slog="start"
+          class="scan"
+          src="/assets/scan-outline.svg"
+        ></ion-icon>
+        Scan
+      </ion-button>
     </section>
     <section *ngIf="isScanMode" class="scanArea">Locate the Barcode</section>
     <section *ngIf="isFoundMode" class="ion-text-center">
@@ -35,6 +42,11 @@
 
 <ion-footer class="ion-text-center">
   <ion-button *ngIf="isFoundMode" color="primary" size="large" (click)="scan()">
+    <ion-icon
+      slog="start"
+      class="scan"
+      src="/assets/scan-outline.svg"
+    ></ion-icon>
     Scan New
   </ion-button>
   <ion-button *ngIf="isScanMode" color="light" size="large" (click)="cancel()">
