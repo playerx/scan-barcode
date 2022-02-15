@@ -452,7 +452,12 @@ export const gs1Codes = [
   {
     country: 'Japan',
     flag: '🇯🇵',
-    barcode: '450-499',
+    barcode: '450-459',
+  },
+  {
+    country: 'Japan',
+    flag: '🇯🇵',
+    barcode: '490-499',
   },
   {
     country: 'Jordan',

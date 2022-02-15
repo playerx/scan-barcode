@@ -1,31 +1,36 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Product Info </ion-title>
-  </ion-toolbar>
+<ion-header *ngIf="isInitialMode" [translucent]="true">
+  <ion-toolbar> </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content [fullscreen]="true" [class.good]="isGood" [class.bad]="isBad">
+  <ion-header *ngIf="isInitialMode" collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Product Info</ion-title>
+      <ion-title size="large">Scan Product</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+      <h5 class="ion-padding">Get information about Manufacturer country</h5>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <p>
-      Scan 🤳 the product <strong>Bar Code</strong> to find out the manufacturer
-      country
-    </p>
-
-    <br />
-    <ion-button (click)="scan()" size="large"> Scan </ion-button>
-    <br />
-
-    <section>
+  <main>
+    <section *ngIf="isInitialMode">
+      <ion-button class="scan" (click)="scan()" size="large"> Scan </ion-button>
+    </section>
+    <section *ngIf="isScanMode" class="scanArea">Locate the Barcode</section>
+    <section *ngIf="isFoundMode" class="ion-text-center">
       <h2>{{ countryName }}</h2>
       <div>{{ barcode }}</div>
 
       <div class="flag">{{ flag }}</div>
     </section>
-  </div>
+  </main>
 </ion-content>
+
+<ion-footer class="ion-text-center">
+  <ion-button *ngIf="isFoundMode" color="primary" size="large" (click)="scan()">
+    Scan New
+  </ion-button>
+  <ion-button *ngIf="isScanMode" color="light" size="large" (click)="cancel()">
+    Cancel
+  </ion-button>
+</ion-footer>
