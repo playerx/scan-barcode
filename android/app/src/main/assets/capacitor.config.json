@@ -1,6 +1,6 @@
 {
-	"appId": "io.ionic.starter",
-	"appName": "barcode-scanner2",
-	"webDir": "www",
-	"bundledWebRuntime": false
+  "appId": "io.jok.scan-products",
+  "appName": "Scan Products",
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
