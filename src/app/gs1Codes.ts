@@ -738,6 +738,7 @@ export const gs1Codes = [
   {
     country: 'Russian Federation',
     flag: '🇷🇺',
+    imageUrl: '/assets/images/tank2.png',
     barcode: '460-469',
   },
   {
@@ -866,7 +867,8 @@ export const gs1Codes = [
   },
   {
     country: 'Switzerland',
-    barcode: null,
+    flag: '🇨🇭',
+    barcode: '760-769',
   },
   {
     country: 'Syria',

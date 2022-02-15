@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
   countryName: string;
   barcode: string;
   flag: string;
+  imageUrl: string;
   isGood = false;
   isBad = false;
 
@@ -39,8 +40,10 @@ export class HomePage implements OnInit {
     return this.mode === 'FOUND';
   }
 
-  ngOnInit() {
-    this.itemsMap = gs1Codes
+  async ngOnInit() {
+    const config = (await this.getConfig()) ?? gs1Codes;
+
+    this.itemsMap = config
       .filter((x) => x.barcode)
       .flatMap((x) => {
         if (!x.barcode.includes('-')) {
@@ -61,6 +64,8 @@ export class HomePage implements OnInit {
         }));
       })
       .reduce((r, x) => r.set(x.barcode, x), new Map());
+
+    this.loadConfig();
   }
 
   async scan() {
@@ -75,6 +80,7 @@ export class HomePage implements OnInit {
     this.countryName = '';
     this.barcode = '';
     this.flag = '';
+    this.imageUrl = '';
     this.mode = 'SCAN';
     this.isGood = false;
     this.isBad = false;
@@ -83,7 +89,7 @@ export class HomePage implements OnInit {
     document.body.classList.add('qrscanner');
 
     const result = await BarcodeScanner.startScan({
-      targetedFormats: [SupportedFormat.EAN_13],
+      targetedFormats: [SupportedFormat.EAN_13, SupportedFormat.EAN_8],
     }); // start scanning and wait for a result
 
     console.log('result', result);
@@ -96,9 +102,13 @@ export class HomePage implements OnInit {
 
       const barCodePrefix = this.barcode.slice(0, 3);
 
-      this.countryName =
-        this.itemsMap.get(barCodePrefix)?.country ?? 'Unknown Country';
-      this.flag = this.itemsMap.get(barCodePrefix)?.flag ?? '';
+      console.log(this.barcode, barCodePrefix, this.itemsMap.has(this.barcode));
+
+      const item = this.itemsMap.get(barCodePrefix);
+
+      this.countryName = item?.country ?? 'Unknown Country';
+      this.flag = item?.flag ?? '';
+      this.imageUrl = item?.imageUrl ?? '';
 
       this.isGood = true;
 
@@ -113,14 +123,52 @@ export class HomePage implements OnInit {
 
       this.sendData(this.barcode, false, false);
     }
-
-    // this.scan();
   }
 
   cancel() {
     this.mode = 'INITIAL';
     BarcodeScanner.showBackground();
     BarcodeScanner.stopScan();
+    document.body.classList.remove('qrscanner');
+  }
+
+  private async loadConfig() {
+    try {
+      const data = await fetch('https://server.jok.io/gs1-codes').then((x) =>
+        x.json()
+      );
+
+      if (!data || !Array.isArray(data)) {
+        return;
+      }
+
+      if (data.length < gs1Codes.length) {
+        return;
+      }
+
+      await Storage.set({ key: 'config', value: JSON.stringify(data) });
+
+      console.log('config updated successfully', data.length);
+    } catch (err) {
+      console.warn(err.toString());
+    }
+  }
+
+  private async getConfig() {
+    try {
+      const data = await Storage.get({ key: 'config' });
+
+      if (!data?.value) {
+        return null;
+      }
+
+      const result = JSON.parse(data.value);
+
+      console.log(result);
+      return result ?? null;
+    } catch (err) {
+      console.warn(err.toString());
+    }
   }
 
   private async sendData(barcode: string, isFound: boolean, hasFlag: boolean) {

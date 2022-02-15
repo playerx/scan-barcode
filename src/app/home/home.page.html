@@ -22,6 +22,10 @@
       <div>{{ barcode }}</div>
 
       <div class="flag">{{ flag }}</div>
+
+      <div *ngIf="imageUrl" class="image">
+        <img [src]="imageUrl" />
+      </div>
     </section>
   </main>
 </ion-content>
