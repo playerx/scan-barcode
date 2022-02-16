@@ -90,7 +90,8 @@ export const gs1Codes = [
   },
   {
     country: 'Belgium',
-    barcode: null,
+    flag: '🇧🇪',
+    barcode: '540-549',
   },
   {
     country: 'Belize',
@@ -439,7 +440,8 @@ export const gs1Codes = [
   },
   {
     country: 'Italy',
-    barcode: null,
+    flag: '🇮🇹',
+    barcode: '800-839',
   },
   {
     country: 'Ivory Coast',
@@ -621,6 +623,7 @@ export const gs1Codes = [
   },
   {
     country: 'Netherlands',
+    flag: '🇳🇱',
     barcode: '870-879',
   },
   {
@@ -713,6 +716,7 @@ export const gs1Codes = [
   },
   {
     country: 'Poland',
+    flag: '🇵🇱',
     barcode: '590',
   },
   {
@@ -839,7 +843,8 @@ export const gs1Codes = [
   },
   {
     country: 'Spain',
-    barcode: null,
+    flag: '🇪🇸',
+    barcode: '840-849',
   },
   {
     country: 'Sri Lanka',
