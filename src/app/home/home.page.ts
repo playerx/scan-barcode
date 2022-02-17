@@ -113,9 +113,13 @@ export class HomePage implements OnInit {
     if (result.hasContent) {
       this.barcode = result.content;
       if (this.barcode.length === 13 || this.barcode.length === 8) {
-        JsBarcode('#barcode', this.barcode, {
-          format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
-        });
+        try {
+          JsBarcode('#barcode', this.barcode, {
+            format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
+          });
+        } catch (err) {
+          console.warn(err.toString());
+        }
       }
 
       const barCodePrefix = this.barcode.slice(0, 3);
@@ -137,7 +141,7 @@ export class HomePage implements OnInit {
       this.sendData(this.barcode, true, !!this.flag);
     } else {
       this.countryName = 'Unknown Country';
-      this.barcode = 'unknown';
+      this.barcode = '';
 
       this.sendData(this.barcode, false, false);
     }
