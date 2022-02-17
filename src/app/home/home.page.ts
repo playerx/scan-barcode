@@ -152,6 +152,18 @@ export class HomePage implements OnInit {
     BarcodeScanner.showBackground();
     BarcodeScanner.stopScan();
     document.body.classList.remove('qrscanner');
+
+    try {
+      this.countryName = "Scan Product's";
+
+      this.barcode = '0000000000000';
+      JsBarcode('#barcode', this.barcode, {
+        format: 'EAN13',
+        valid: () => true,
+      });
+    } catch (err) {
+      console.warn(err.toString());
+    }
   }
 
   private async loadConfig() {
