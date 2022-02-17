@@ -10,11 +10,15 @@ ion-footer {
   }
 }
 
+svg.isLong {
+  margin-left: -16px;
+}
+
 main {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 80%;
+  height: 90%;
 
   header {
   }

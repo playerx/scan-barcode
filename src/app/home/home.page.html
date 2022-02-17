@@ -1,9 +1,9 @@
-<ion-header *ngIf="isInitialMode" [translucent]="true">
+<!-- <ion-header *ngIf="isInitialMode" [translucent]="true">
   <ion-toolbar> </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content [fullscreen]="true" [class.good]="isGood" [class.bad]="isBad">
-  <ion-header *ngIf="isInitialMode" collapse="condense">
+  <!-- <ion-header *ngIf="isInitialMode" collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Scan Product</ion-title>
     </ion-toolbar>
@@ -13,10 +13,10 @@
         <strong>Manufacturer country</strong>
       </h5>
     </ion-toolbar>
-  </ion-header>
+  </ion-header> -->
 
   <main>
-    <section *ngIf="isInitialMode">
+    <!-- <section *ngIf="isInitialMode">
       <ion-button class="scan" (click)="scan()" size="large">
         <ion-icon
           slog="start"
@@ -25,13 +25,18 @@
         ></ion-icon>
         Scan
       </ion-button>
-    </section>
+    </section> -->
     <section *ngIf="isScanMode" class="scanArea">Locate the Barcode</section>
-    <section *ngIf="isFoundMode" class="ion-text-center">
+    <section
+      [class.ion-hide]="!isFoundMode && !isInitialMode"
+      class="ion-text-center"
+    >
       <h2>{{ countryName }}</h2>
-      <div>{{ barcode }}</div>
-
       <div class="flag">{{ flag }}</div>
+
+      <div [class.ion-hide]="!barcode">
+        <svg id="barcode" [class.isLong]="barcode?.length === 13"></svg>
+      </div>
 
       <div *ngIf="imageUrl" class="image">
         <img [src]="imageUrl" />
@@ -41,13 +46,19 @@
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button *ngIf="isFoundMode" color="primary" size="large" (click)="scan()">
+  <ion-button
+    *ngIf="isFoundMode || isInitialMode"
+    color="primary"
+    size="large"
+    (click)="scan()"
+  >
     <ion-icon
       slog="start"
       class="scan"
       src="/assets/scan-outline.svg"
     ></ion-icon>
-    Scan New
+    <span *ngIf="isInitialMode">Scan</span>
+    <span *ngIf="!isInitialMode">Scan New</span>
   </ion-button>
   <ion-button *ngIf="isScanMode" color="light" size="large" (click)="cancel()">
     Cancel

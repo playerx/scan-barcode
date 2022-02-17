@@ -11,6 +11,9 @@ import { environment } from 'src/environments/environment';
 import { v4 } from 'uuid';
 import { gs1Codes } from '../gs1Codes';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+declare let JsBarcode: any;
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -19,7 +22,7 @@ import { gs1Codes } from '../gs1Codes';
 export class HomePage implements OnInit {
   itemsMap: Map<string, any>;
 
-  countryName: string;
+  countryName = "Scan Product's";
   barcode: string;
   flag: string;
   imageUrl: string;
@@ -42,6 +45,16 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     const config = (await this.getConfig()) ?? gs1Codes;
+
+    try {
+      this.barcode = '0000000000000';
+      JsBarcode('#barcode', this.barcode, {
+        format: 'EAN13',
+        valid: () => true,
+      });
+    } catch (err) {
+      console.warn(err.toString());
+    }
 
     this.itemsMap = config
       .filter((x) => x.barcode)
@@ -99,6 +112,11 @@ export class HomePage implements OnInit {
     // if the result has content
     if (result.hasContent) {
       this.barcode = result.content;
+      if (this.barcode.length === 13 || this.barcode.length === 8) {
+        JsBarcode('#barcode', this.barcode, {
+          format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
+        });
+      }
 
       const barCodePrefix = this.barcode.slice(0, 3);
 
