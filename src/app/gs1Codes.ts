@@ -86,6 +86,7 @@ export const gs1Codes = [
   {
     country: 'Belarus',
     flag: '🇧🇾',
+    imageUrl: '/assets/images/tank4.png',
     barcode: '481',
   },
   {
@@ -224,6 +225,7 @@ export const gs1Codes = [
   {
     country: 'Croatia',
     barcode: '385',
+    flag: '🇭🇷',
   },
   {
     country: 'Cuba',
@@ -284,6 +286,7 @@ export const gs1Codes = [
   {
     country: 'Estonia',
     barcode: '474',
+    flag: '🇪🇪',
   },
   {
     country: 'Ethiopia',
@@ -352,6 +355,7 @@ export const gs1Codes = [
   {
     country: 'Greece',
     barcode: '520-521',
+    flag: '🇬🇷',
   },
   {
     country: 'Greenland',
@@ -404,6 +408,7 @@ export const gs1Codes = [
   {
     country: 'Hong Kong',
     barcode: '489',
+    flag: '🇭🇰',
   },
   {
     country: 'Hungary',
@@ -467,7 +472,8 @@ export const gs1Codes = [
   },
   {
     country: 'Kazakhstan',
-    barcode: null,
+    barcode: '487',
+    flag: '🇰🇿',
   },
   {
     country: 'Kenya',
@@ -492,6 +498,7 @@ export const gs1Codes = [
   {
     country: 'Latvia',
     barcode: '475',
+    flag: 'Latvia',
   },
   {
     country: 'Lebanon',
@@ -516,6 +523,7 @@ export const gs1Codes = [
   {
     country: 'Lithuania',
     barcode: '477',
+    flag: '🇱🇹',
   },
   {
     country: 'Luxembourg',
@@ -584,6 +592,7 @@ export const gs1Codes = [
   {
     country: 'Moldova',
     barcode: '484',
+    flag: '🇲🇩',
   },
   {
     country: 'Monaco',
@@ -709,6 +718,7 @@ export const gs1Codes = [
   {
     country: 'Philippines',
     barcode: '480',
+    flag: '🇵🇭',
   },
   {
     country: 'Pitcairn',
@@ -816,6 +826,7 @@ export const gs1Codes = [
   {
     country: 'Slovenia',
     barcode: '383',
+    flag: '🇸🇮',
   },
   {
     country: 'Solomon Islands',
@@ -882,10 +893,16 @@ export const gs1Codes = [
   {
     country: 'Tajikistan',
     barcode: '488',
+    flag: '🇹🇯',
   },
   {
     country: 'Tanzania',
     barcode: '620',
+  },
+  {
+    country: 'Taiwan',
+    barcode: '471',
+    flag: '🇹🇼',
   },
   {
     country: 'Thailand',
@@ -923,6 +940,7 @@ export const gs1Codes = [
   {
     country: 'Turkmenistan',
     barcode: '483',
+    flag: '🇹🇲',
   },
   {
     country: 'Turks and Caicos Islands',
@@ -939,6 +957,7 @@ export const gs1Codes = [
   {
     country: 'Ukraine',
     flag: '🇺🇦',
+    imageUrl: '/assets/images/ukraine.png',
     barcode: '482',
   },
   {
@@ -966,6 +985,7 @@ export const gs1Codes = [
   {
     country: 'Uzbekistan',
     barcode: '478',
+    flag: '🇺🇿',
   },
   {
     country: 'Vanuatu',
