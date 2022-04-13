@@ -130,7 +130,7 @@ export class HomePage implements OnInit {
 
       this.countryName = item?.country ?? 'Unknown Country';
       this.flag = item?.flag ?? '';
-      this.imageUrl = item?.imageUrl ?? '';
+      this.imageUrl = item?.imageUrl2 ?? item?.imageUrl ?? '';
 
       this.isGood = true;
 
@@ -138,12 +138,12 @@ export class HomePage implements OnInit {
 
       console.log('barcode', result.content); // log the raw scanned content
 
-      this.sendData(this.barcode, true, !!this.flag);
+      this.sendData(this.barcode, true, !!this.flag, this.countryName);
     } else {
       this.countryName = 'Unknown Country';
       this.barcode = '';
 
-      this.sendData(this.barcode, false, false);
+      this.sendData(this.barcode, false, false, this.countryName);
     }
   }
 
@@ -205,7 +205,12 @@ export class HomePage implements OnInit {
     }
   }
 
-  private async sendData(barcode: string, isFound: boolean, hasFlag: boolean) {
+  private async sendData(
+    barcode: string,
+    isFound: boolean,
+    hasFlag: boolean,
+    productCountry: string
+  ) {
     try {
       const deviceId = await this.getDeviceId();
       console.log('beo');
@@ -228,6 +233,7 @@ export class HomePage implements OnInit {
             ...info,
             isFound,
             hasFlag,
+            productCountry,
           },
         }),
       }).then((x) => x);

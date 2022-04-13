@@ -86,7 +86,8 @@ export const gs1Codes = [
   {
     country: 'Belarus',
     flag: '🇧🇾',
-    imageUrl: '/assets/images/tank4.png',
+    imageUrl: 'https://stoprussia.app/assets/images/tank4.png',
+    imageUrl2: '/assets/images/tank3.png',
     barcode: '481',
   },
   {
@@ -205,6 +206,7 @@ export const gs1Codes = [
   {
     country: 'Colombia',
     barcode: '770-771',
+    flag: '🇨🇴',
   },
   {
     country: 'Comoros',
@@ -238,10 +240,12 @@ export const gs1Codes = [
   {
     country: 'Czech Republic',
     barcode: '859',
+    flag: '🇨🇿',
   },
   {
     country: 'Denmark',
     barcode: '570-579',
+    flag: '🇩🇰',
   },
   {
     country: 'Djibouti',
@@ -262,10 +266,12 @@ export const gs1Codes = [
   {
     country: 'Ecuador',
     barcode: '786',
+    flag: '🇪🇨',
   },
   {
     country: 'Egypt',
     barcode: '622',
+    flag: '🇪🇬',
   },
   {
     country: 'El Salvador',
@@ -404,6 +410,7 @@ export const gs1Codes = [
   {
     country: 'Honduras',
     barcode: '742',
+    flag: '🇭🇳',
   },
   {
     country: 'Hong Kong',
@@ -413,6 +420,7 @@ export const gs1Codes = [
   {
     country: 'Hungary',
     barcode: '599',
+    flag: '🇭🇺',
   },
   {
     country: 'Iceland',
@@ -421,10 +429,12 @@ export const gs1Codes = [
   {
     country: 'India',
     barcode: '890',
+    flag: '🇮🇳',
   },
   {
     country: 'Indonesia',
     barcode: '899',
+    flag: '🇮🇩',
   },
   {
     country: 'Iran',
@@ -437,11 +447,13 @@ export const gs1Codes = [
   },
   {
     country: 'Ireland',
-    barcode: null,
+    barcode: '539',
+    flag: '🇮🇪',
   },
   {
     country: 'Israel',
     barcode: '729',
+    flag: '🇮🇱',
   },
   {
     country: 'Italy',
@@ -498,7 +510,7 @@ export const gs1Codes = [
   {
     country: 'Latvia',
     barcode: '475',
-    flag: 'Latvia',
+    flag: '🇱🇻',
   },
   {
     country: 'Lebanon',
@@ -536,6 +548,7 @@ export const gs1Codes = [
   {
     country: 'North Macedonia',
     barcode: '531',
+    flag: '🇲🇰',
   },
   {
     country: 'Madagascar',
@@ -548,6 +561,7 @@ export const gs1Codes = [
   {
     country: 'Malaysia',
     barcode: '955',
+    flag: '🇲🇾',
   },
   {
     country: 'Maldives',
@@ -560,6 +574,7 @@ export const gs1Codes = [
   {
     country: 'Malta',
     barcode: '535',
+    flag: '🇲🇹',
   },
   {
     country: 'Marshall Islands',
@@ -584,6 +599,7 @@ export const gs1Codes = [
   {
     country: 'Mexico',
     barcode: '750',
+    flag: '🇲🇽',
   },
   {
     country: 'Micronesia, Federated States of',
@@ -646,6 +662,7 @@ export const gs1Codes = [
   {
     country: 'New Zealand',
     barcode: '940-949',
+    flag: '🇳🇿',
   },
   {
     country: 'Nicaragua',
@@ -731,6 +748,7 @@ export const gs1Codes = [
   },
   {
     country: 'Portugal',
+    flag: '🇵🇹',
     barcode: '560',
   },
   {
@@ -739,6 +757,7 @@ export const gs1Codes = [
   },
   {
     country: 'Qatar',
+    flag: '🇶🇦',
     barcode: null,
   },
   {
@@ -748,6 +767,7 @@ export const gs1Codes = [
   {
     country: 'Romania',
     barcode: '594',
+    flag: '🇷🇴',
   },
   {
     country: 'Russian Federation',
@@ -806,6 +826,7 @@ export const gs1Codes = [
   {
     country: 'Serbia',
     barcode: '860',
+    flag: '🇷🇸',
   },
   {
     country: 'Seychelles',
@@ -818,9 +839,11 @@ export const gs1Codes = [
   {
     country: 'Singapore',
     barcode: '888',
+    flag: '🇸🇬',
   },
   {
     country: 'Slovakia',
+    flag: '🇸🇰',
     barcode: '858',
   },
   {
@@ -839,6 +862,7 @@ export const gs1Codes = [
   {
     country: 'South Africa',
     barcode: '600-601',
+    flag: '🇿🇦',
   },
   {
     country: 'South Georgia and the South Sandwich Islands',
@@ -847,6 +871,7 @@ export const gs1Codes = [
   {
     country: 'South Korea',
     barcode: '880',
+    flag: '🇰🇷',
   },
   {
     country: 'South Sudan',
@@ -859,7 +884,8 @@ export const gs1Codes = [
   },
   {
     country: 'Sri Lanka',
-    barcode: null,
+    barcode: '479',
+    flag: '🇱🇰',
   },
   {
     country: 'Sudan',
@@ -879,7 +905,8 @@ export const gs1Codes = [
   },
   {
     country: 'Sweden',
-    barcode: null,
+    flag: '🇸🇪',
+    barcode: '730-739',
   },
   {
     country: 'Switzerland',
@@ -889,6 +916,7 @@ export const gs1Codes = [
   {
     country: 'Syria',
     barcode: '621',
+    flag: '🇸🇾',
   },
   {
     country: 'Tajikistan',
@@ -898,6 +926,7 @@ export const gs1Codes = [
   {
     country: 'Tanzania',
     barcode: '620',
+    flag: '🇹🇿',
   },
   {
     country: 'Taiwan',
@@ -907,6 +936,7 @@ export const gs1Codes = [
   {
     country: 'Thailand',
     barcode: '885',
+    flag: '🇹🇭',
   },
   {
     country: 'The Democratic Republic of Congo',
@@ -957,12 +987,14 @@ export const gs1Codes = [
   {
     country: 'Ukraine',
     flag: '🇺🇦',
-    imageUrl: '/assets/images/ukraine.png',
+    imageUrl: 'https://stoprussia.app/assets/ukraine.png',
+    imageUrl2: '/assets/images/ukraine.png',
     barcode: '482',
   },
   {
     country: 'United Arab Emirates',
     barcode: '629',
+    flag: '🇦🇪',
   },
   {
     country: 'United Kingdom',
@@ -998,6 +1030,7 @@ export const gs1Codes = [
   {
     country: 'Vietnam',
     barcode: '893',
+    flag: '🇻🇳',
   },
   {
     country: 'Virgin Islands, British',
