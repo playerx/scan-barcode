@@ -6,6 +6,9 @@ import { v4 } from 'uuid';
 export class DataService {
   scannedProductInfo = new Map<string, any>();
 
+  reqCookie: string;
+  reqSessionId: string;
+
   async getDeviceId() {
     const id = await Storage.get({ key: 'deviceId' });
 

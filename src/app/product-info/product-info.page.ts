@@ -35,7 +35,7 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
       }
 
       JsBarcode('#barcode2', this.code, {
-        format: 'EAN13',
+        format: this.code.length === 13 ? 'EAN13' : 'EAN8',
         valid: () => true,
       });
     } catch (err) {
@@ -67,7 +67,12 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
 
       console.log('starting request', this.code, captcha);
 
-      const info = await getBarcodeData(this.code, captcha);
+      const info = await getBarcodeData(
+        this.code,
+        captcha,
+        this.dataService.reqCookie,
+        this.dataService.reqSessionId
+      );
 
       console.log(info);
 

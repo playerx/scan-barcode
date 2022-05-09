@@ -2,16 +2,10 @@ import { Http, HttpResponse } from '@capacitor-community/http';
 
 export async function getBarcodeData(
   barcode: string,
-  recaptcha: string
+  recaptcha: string,
+  reqCookie = '41e4c95d7c759d614046ee36c27d0981=a2f62d02c1db326c32459dfbf13c7b4e; cb-enabled=enabled; _ga=GA1.2.32378198.1652032293; _gid=GA1.2.1827647358.1652032293; _gat=1; _jsuid=528501127; _no_tracky_101136351=1; _ga=GA1.3.32378198.1652032293; _gid=GA1.3.1827647358.1652032293; _gat_UA-889776-1=1',
+  reqSessionId = 'cad943c06cb23b04c1bd6fcdfbbb09d4'
 ): Promise<any> {
-  const urlencoded = new URLSearchParams();
-  urlencoded.append('cad943c06cb23b04c1bd6fcdfbbb09d4', '1');
-  urlencoded.append('g-recaptcha-response', recaptcha);
-  urlencoded.append('keyCode', 'gtin');
-  urlencoded.append('keyValue', barcode);
-  urlencoded.append('requestTradeItemType', 'ownership');
-
-  console.log('request sent', urlencoded);
   const response: HttpResponse = await Http.post({
     url: 'https://gepir.gs1.org/index.php?option=com_gepir4ui&view=getkeylicensee&format=raw',
     headers: {
@@ -23,10 +17,15 @@ export async function getBarcodeData(
       'User-Agent':
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36',
       'sec-ch-ua-platform': 'macOS',
-      Cookie:
-        '41e4c95d7c759d614046ee36c27d0981=a2f62d02c1db326c32459dfbf13c7b4e; cb-enabled=enabled; _ga=GA1.2.32378198.1652032293; _gid=GA1.2.1827647358.1652032293; _gat=1; _jsuid=528501127; _no_tracky_101136351=1; _ga=GA1.3.32378198.1652032293; _gid=GA1.3.1827647358.1652032293; _gat_UA-889776-1=1',
+      Cookie: reqCookie,
     },
-    data: urlencoded.toString(),
+    data: {
+      [reqSessionId]: '1',
+      'g-recaptcha-response': recaptcha,
+      keyCode: 'gtin',
+      keyValue: barcode,
+      requestTradeItemType: 'ownership',
+    },
   });
 
   if (response.status !== 200) {

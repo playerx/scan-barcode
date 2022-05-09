@@ -260,6 +260,14 @@ export class HomePage implements OnInit {
         this.dataService.scannedProductInfo.set(this.barcode, data.info);
       }
 
+      if (data.reqCookie) {
+        this.dataService.reqCookie = data.reqCookie;
+      }
+
+      if (data.reqSessionId) {
+        this.dataService.reqSessionId = data.reqSessionId;
+      }
+
       Storage.set({ key: 'SHOW_MORE_INFO', value: data.show ? '1' : '0' });
     } catch (err) {
       console.warn('api call error', err.toString());

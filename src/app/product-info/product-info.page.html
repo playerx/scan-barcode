@@ -8,8 +8,8 @@
 </ion-header>
 
 <ion-content>
-  <div class="barcodePanel">
-    <svg id="barcode2" [class.isLong]="code?.length === 13"></svg>
+  <div class="barcodePanel" [class.isLong]="code?.length === 13">
+    <svg id="barcode2"></svg>
   </div>
 
   <form [class.ion-hide]="infoItems" (submit)="onSubmit($event)">

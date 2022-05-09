@@ -7,10 +7,18 @@ form {
 }
 
 .barcodePanel {
-  width: 230px;
   margin-left: auto;
   margin-right: auto;
   padding-top: 50px;
+  width: 150px;
+
+  &.isLong {
+    width: 230px;
+
+    svg {
+      margin-left: -16px;
+    }
+  }
 }
 
 ion-list {
@@ -24,8 +32,4 @@ ion-item-group {
 
 #recaptcha2 {
   min-height: 78px;
-}
-
-svg.isLong {
-  margin-left: -16px;
 }
