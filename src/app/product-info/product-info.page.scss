@@ -23,7 +23,7 @@ form {
 
 ion-list {
   margin-top: 50px;
-  margin-bottom: 70px;
+  margin-bottom: 30px;
 }
 
 ion-item-group {
@@ -32,4 +32,9 @@ ion-item-group {
 
 #recaptcha2 {
   min-height: 78px;
+}
+
+footer {
+  text-align: right;
+  padding-bottom: 70px;
 }
