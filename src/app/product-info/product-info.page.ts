@@ -1,11 +1,10 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Http } from '@capacitor-community/http';
-import { Device } from '@capacitor/device';
 import { getBarcodeData } from 'src/domain/getBarcodeData';
 import { jsonToRenderItems, RenderItem } from 'src/domain/jsonToRenderItems';
 import { environment } from 'src/environments/environment';
 import { DataService } from '../services/data.service';
+import { Browser } from '@capacitor/browser';
 
 declare let grecaptcha: any;
 declare let JsBarcode: any;
@@ -120,5 +119,12 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
     } catch (err) {
       console.warn('api call error', err.toString());
     }
+  }
+
+  openSource() {
+    Browser.open({
+      url: 'https://gepir.gs1.org/index.php/search-by-gtin',
+      presentationStyle: 'popover',
+    });
   }
 }
