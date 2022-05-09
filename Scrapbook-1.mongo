@@ -1,3 +1,0 @@
-db.scans.deleteMany({ barcode: "test" });
-
-db.scan.products.findOne({ _id: "4954621001716" });
