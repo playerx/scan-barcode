@@ -2,40 +2,60 @@ export function jsonToRenderItems(data: any): RenderItem[] {
   const items = Object.entries(data);
 
   return items
-    .map(([key, value]) => {
+    .flatMap(([key, value]): any => {
       if (key === 'returnCode') {
-        return;
+        return [];
+      }
+
+      if (key === 'gln' || key === 'gepirRequestedKey') {
+        return [];
       }
 
       if (value['_'] != null) {
-        return { type: 'ITEM', key: prettifyKey(key), value: value['_'] };
+        return [{ type: 'ITEM', key: prettifyKey(key), value: value['_'] }];
+      }
+
+      if (Array.isArray(value) && key === 'communicationChannel') {
+        return value.map((x) => ({
+          type: 'ITEM',
+          key: prettifyKey(x.communicationChannelName),
+          value: x.communicationValue,
+          isLink: true,
+          linkMode: x.communicationChannelCode?._,
+        }));
       }
 
       if (typeof value === 'object') {
-        const items = jsonToRenderItems(value);
+        const items = jsonToRenderItems(value).filter(
+          (x) => x.type === 'GROUP' || !!x.value
+        );
         if (!items?.length) {
-          return;
+          return [];
         }
 
-        return {
-          type: 'GROUP',
-          groupName: prettifyKey(key),
-          items,
-        };
+        return [
+          {
+            type: 'GROUP',
+            groupName: prettifyKey(key),
+            items,
+          },
+        ];
       }
 
       if (key === 'lastChangeDate') {
-        return {
-          type: 'ITEM',
-          key: prettifyKey(key),
-          value: new Date(value as any),
-          isDate: true,
-        };
+        return [
+          {
+            type: 'ITEM',
+            key: prettifyKey(key),
+            value: new Date(value as any),
+            isDate: true,
+          },
+        ];
       }
 
-      return { type: 'ITEM', key: prettifyKey(key), value };
+      return [{ type: 'ITEM', key: prettifyKey(key), value }];
     })
-    .filter((x) => !!x) as any;
+    .filter((x) => x.type === 'GROUP' || !!x.value);
 }
 
 export type RenderItem =
@@ -44,6 +64,8 @@ export type RenderItem =
       key: string;
       value: any;
       isDate?: boolean;
+      isLink?: boolean;
+      linkMode?: string;
     }
   | {
       type: 'GROUP';

@@ -41,5 +41,37 @@ export async function getBarcodeData(
     );
   }
 
-  return data;
+  const response2: HttpResponse = await Http.post({
+    url: 'https://gepir.gs1.org/index.php?option=com_gepir4ui&view=getitembygtin&format=raw',
+    headers: {
+      'sec-ch-ua':
+        '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"',
+      Accept: 'application/json, text/javascript, */*; q=0.01',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'sec-ch-ua-mobile': '?0',
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36',
+      'sec-ch-ua-platform': 'macOS',
+      Cookie: reqCookie,
+    },
+    data: {
+      [reqSessionId]: '1',
+      'g-recaptcha-response': recaptcha,
+      keyCode: 'gtin',
+      keyValue: barcode,
+      requestTradeItemType: 'information',
+    },
+  });
+
+  const data2 = JSON.parse(response2.data);
+  if (data2?.gepirItem?.itemDataLine?.returnCode?._ == '14') {
+    throw new Error(
+      'Daily request limit exceeded. Please try again tomorrow, or different IP address'
+    );
+  }
+
+  return {
+    ...data,
+    gepirItem: data2?.gepirItem,
+  };
 }

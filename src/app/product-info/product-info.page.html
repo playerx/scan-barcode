@@ -21,8 +21,11 @@
     </ion-button>
   </form>
 
-  <ion-list *ngIf="infoItems">
-    <ion-item *ngFor="let item of infoItems">
+  <ion-list-header *ngIf="productItems">
+    <ion-label>Product</ion-label>
+  </ion-list-header>
+  <ion-list *ngIf="productItems">
+    <ion-item *ngFor="let item of productItems">
       <ng-container [ngSwitch]="item.type">
         <!-- the same view can be shown in more than one case -->
         <ng-container *ngSwitchCase="'ITEM'">
@@ -31,7 +34,14 @@
             <ng-container *ngIf="item['isDate']; else TextView">
               {{ item['value'] | date }}
             </ng-container>
-            <ng-template #TextView> {{ item['value'] }} </ng-template>
+            <ng-template #TextView>
+              <span
+                *ngIf="item['isLink']; else PlainView"
+                [innerHTML]="formatLink(item['value'], item['linkMode'])"
+              >
+              </span>
+              <ng-template #PlainView> {{ item['value'] }} </ng-template>
+            </ng-template>
           </ion-note>
         </ng-container>
         <ng-container *ngSwitchCase="'GROUP'">
@@ -45,6 +55,54 @@
                 {{ subItem['key'] }}
               </ion-label>
               <ion-note color="dark">{{ subItem['value'] }}</ion-note>
+            </ion-item>
+          </ion-item-group>
+        </ng-container>
+      </ng-container>
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header *ngIf="infoItems">
+    <ion-label>Ownership</ion-label>
+  </ion-list-header>
+  <ion-list *ngIf="infoItems">
+    <ion-item *ngFor="let item of infoItems">
+      <ng-container [ngSwitch]="item.type">
+        <!-- the same view can be shown in more than one case -->
+        <ng-container *ngSwitchCase="'ITEM'">
+          <ion-label color="medium" slot="start">{{ item['key'] }}</ion-label>
+          <ion-note color="dark">
+            <ng-container *ngIf="item['isDate']; else TextView">
+              {{ item['value'] | date }}
+            </ng-container>
+            <ng-template #TextView>
+              <span
+                *ngIf="item['isLink']; else PlainView"
+                [innerHTML]="formatLink(item['value'], item['linkMode'])"
+              >
+              </span>
+              <ng-template #PlainView> {{ item['value'] }} </ng-template>
+            </ng-template>
+          </ion-note>
+        </ng-container>
+        <ng-container *ngSwitchCase="'GROUP'">
+          <ion-item-group>
+            <ion-item-divider>
+              <ion-label>{{ item['groupName'] }}</ion-label>
+            </ion-item-divider>
+
+            <ion-item *ngFor="let subItem of item['items']">
+              <ion-label color="medium" slot="start">
+                {{ subItem['key'] }}
+              </ion-label>
+              <ion-note color="dark">
+                <span
+                  *ngIf="subItem['isLink']; else PlainView"
+                  [innerHTML]="formatLink(subItem['value'], subItem['linkMode'])"
+                >
+                </span>
+                <ng-template #PlainView> {{ subItem['value'] }} </ng-template>
+              </ion-note>
             </ion-item>
           </ion-item-group>
         </ng-container>

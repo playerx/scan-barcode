@@ -16,7 +16,9 @@ declare let JsBarcode: any;
 })
 export class ProductInfoPage implements OnInit, AfterViewInit {
   code: string;
+  productItems?: RenderItem[];
   infoItems?: RenderItem[];
+
   isLoading: boolean;
 
   constructor(
@@ -30,7 +32,12 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
     try {
       const cachedData = this.dataService.scannedProductInfo.get(this.code);
       if (cachedData) {
-        this.infoItems = jsonToRenderItems(cachedData);
+        this.productItems = jsonToRenderItems(
+          cachedData?.gepirItem?.itemDataLine
+        );
+        this.infoItems = jsonToRenderItems(
+          cachedData?.gepirParty?.partyDataLine
+        );
       }
 
       JsBarcode('#barcode2', this.code, {
@@ -75,9 +82,8 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
 
       console.log(info);
 
-      const minimalData = info.gepirParty?.partyDataLine ?? {};
-
-      this.infoItems = jsonToRenderItems(minimalData);
+      this.productItems = jsonToRenderItems(info.gepirItem?.itemDataLine ?? {});
+      this.infoItems = jsonToRenderItems(info.gepirParty?.partyDataLine ?? {});
 
       this.sendData(this.code, info);
     } catch (err) {
@@ -87,10 +93,7 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
 
   private async sendData(barcode: string, info: any) {
     try {
-      this.dataService.scannedProductInfo.set(
-        this.code,
-        info?.gepirParty?.partyDataLine
-      );
+      this.dataService.scannedProductInfo.set(this.code, info);
 
       const deviceId = await this.dataService.getDeviceId();
 
@@ -126,5 +129,29 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
       url: 'https://gepir.gs1.org/index.php/search-by-gtin',
       presentationStyle: 'popover',
     });
+  }
+
+  formatLink(text: string, mode: 'TELEPHONE' | 'WEBSITE' | 'EMAIL') {
+    if (!text) {
+      return '';
+    }
+
+    if (
+      text.startsWith('http://') ||
+      text.startsWith('https://') ||
+      mode === 'WEBSITE'
+    ) {
+      return `<a href="${text}" target="_blank">${text}</a>`;
+    }
+
+    if (text.startsWith('+') || mode === 'TELEPHONE') {
+      return `<a href="tel:${text}">${text}</a>`;
+    }
+
+    if (text.includes('@') || mode === 'EMAIL') {
+      return `<a href="mailto:${text}">${text}</a>`;
+    }
+
+    return text;
   }
 }
