@@ -10,6 +10,7 @@ import { Storage } from '@capacitor/storage';
 import { environment } from 'src/environments/environment';
 import { v4 } from 'uuid';
 import { gs1Codes } from '../gs1Codes';
+import { DataService } from '../services/data.service';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 declare let JsBarcode: any;
@@ -28,6 +29,8 @@ export class HomePage implements OnInit {
   imageUrl: string;
   isGood = false;
   isBad = false;
+  allowMoreInfo = true;
+  showMoreInfoButton = false;
 
   mode: 'INITIAL' | 'SCAN' | 'FOUND' = 'INITIAL';
 
@@ -43,8 +46,14 @@ export class HomePage implements OnInit {
     return this.mode === 'FOUND';
   }
 
+  constructor(private dataService: DataService) {}
+
   async ngOnInit() {
     const config = (await this.getConfig()) ?? gs1Codes;
+
+    this.showMoreInfoButton = await Storage.get({ key: 'SHOW_MORE_INFO' }).then(
+      (x) => x.value == '1'
+    );
 
     try {
       this.barcode = '0000000000000';
@@ -212,8 +221,8 @@ export class HomePage implements OnInit {
     productCountry: string
   ) {
     try {
-      const deviceId = await this.getDeviceId();
-      console.log('beo');
+      this.allowMoreInfo = false;
+      const deviceId = await this.dataService.getDeviceId();
       const info = await Device.getInfo();
 
       console.log('sending deviceId', deviceId);
@@ -238,23 +247,23 @@ export class HomePage implements OnInit {
         }),
       }).then((x) => x);
 
-      console.log('api call result', result.status, await result.text());
+      console.log('api call result', result.status);
+
+      const data = await result.json();
+
+      console.log('received response', data);
+
+      this.showMoreInfoButton = data.show;
+      this.allowMoreInfo = true;
+
+      if (data.info) {
+        this.dataService.scannedProductInfo.set(this.barcode, data.info);
+      }
+
+      Storage.set({ key: 'SHOW_MORE_INFO', value: data.show ? '1' : '0' });
     } catch (err) {
-      console.warn(err.toString());
+      console.warn('api call error', err.toString());
+      this.showMoreInfoButton = false;
     }
-  }
-
-  private async getDeviceId() {
-    const id = await Storage.get({ key: 'deviceId' });
-
-    if (id?.value) {
-      return id.value;
-    }
-
-    const newId = v4();
-
-    await Storage.set({ key: 'deviceId', value: newId });
-
-    return newId;
   }
 }

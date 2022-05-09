@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title> Product Information </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="barcodePanel">
+    <svg id="barcode2" [class.isLong]="code?.length === 13"></svg>
+  </div>
+
+  <form [class.ion-hide]="infoItems" (submit)="onSubmit($event)">
+    <div id="recaptcha2"></div>
+    <br />
+    <ion-button type="submit" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Submit</span>
+      <span *ngIf="isLoading">Please wait...</span>
+    </ion-button>
+  </form>
+
+  <ion-list *ngIf="infoItems">
+    <ion-item *ngFor="let item of infoItems">
+      <ng-container [ngSwitch]="item.type">
+        <!-- the same view can be shown in more than one case -->
+        <ng-container *ngSwitchCase="'ITEM'">
+          <ion-label color="medium" slot="start">{{ item['key'] }}</ion-label>
+          <ion-note color="dark">
+            <ng-container *ngIf="item['isDate']; else TextView">
+              {{ item['value'] | date }}
+            </ng-container>
+            <ng-template #TextView> {{ item['value'] }} </ng-template>
+          </ion-note>
+        </ng-container>
+        <ng-container *ngSwitchCase="'GROUP'">
+          <ion-item-group>
+            <ion-item-divider>
+              <ion-label>{{ item['groupName'] }}</ion-label>
+            </ion-item-divider>
+
+            <ion-item *ngFor="let subItem of item['items']">
+              <ion-label color="medium" slot="start">
+                {{ subItem['key'] }}
+              </ion-label>
+              <ion-note color="dark">{{ subItem['value'] }}</ion-note>
+            </ion-item>
+          </ion-item-group>
+        </ng-container>
+      </ng-container>
+    </ion-item>
+  </ion-list>
+
+  <br />
+  <br />
+</ion-content>

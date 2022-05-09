@@ -63,4 +63,14 @@
   <ion-button *ngIf="isScanMode" color="light" size="large" (click)="cancel()">
     Cancel
   </ion-button>
+  <ion-button
+    *ngIf="isFoundMode && showMoreInfoButton"
+    color="accent"
+    size="large"
+    [routerLink]="['/product', barcode]"
+    [disabled]="!allowMoreInfo"
+  >
+    <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+    More Info
+  </ion-button>
 </ion-footer>
