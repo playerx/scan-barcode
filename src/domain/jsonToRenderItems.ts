@@ -7,7 +7,11 @@ export function jsonToRenderItems(data: any): RenderItem[] {
         return [];
       }
 
-      if (key === 'gln' || key === 'gepirRequestedKey') {
+      if (
+        key === 'gln' ||
+        key === 'gepirRequestedKey' ||
+        key === 'responderSpecificData'
+      ) {
         return [];
       }
 

@@ -21,10 +21,10 @@
     </ion-button>
   </form>
 
-  <ion-list-header *ngIf="productItems">
+  <ion-list-header *ngIf="productItems?.length">
     <ion-label>Product</ion-label>
   </ion-list-header>
-  <ion-list *ngIf="productItems">
+  <ion-list *ngIf="productItems?.length">
     <ion-item *ngFor="let item of productItems">
       <ng-container [ngSwitch]="item.type">
         <!-- the same view can be shown in more than one case -->
