@@ -23,7 +23,7 @@ declare let JsBarcode: any;
 export class HomePage implements OnInit {
   itemsMap: Map<string, any>;
 
-  countryName = "Scan Product's";
+  countryName = 'Scan Product';
   barcode: string;
   flag: string;
   imageUrl: string;
