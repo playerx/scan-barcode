@@ -7,8 +7,10 @@ import { Camera } from '@capacitor/camera';
 import { Device } from '@capacitor/device';
 import { Haptics } from '@capacitor/haptics';
 import { Storage } from '@capacitor/storage';
+import { IonRouterOutlet, ModalController } from '@ionic/angular';
+import JSConfetti from 'js-confetti';
 import { environment } from 'src/environments/environment';
-import { v4 } from 'uuid';
+import { EmailVerificationPage } from '../email-verification/email-verification.page';
 import { gs1Codes } from '../gs1Codes';
 import { DataService } from '../services/data.service';
 
@@ -24,13 +26,41 @@ export class HomePage implements OnInit {
   itemsMap: Map<string, any>;
 
   countryName = 'Scan Product';
-  barcode: string;
+  productName = '';
+  barcode: string = '';
   flag: string;
   imageUrl: string;
   isGood = false;
   isBad = false;
+  isReviewCompleted = false;
+  selectedReview: string;
   allowMoreInfo = true;
   showMoreInfoButton = false;
+
+  summaryItems = [];
+
+  allowedReviews = [
+    'thumbs_up',
+    'sparkling_heart',
+    'relieved_face',
+    'thinking_face',
+    'exploding_head',
+    'pleading_face',
+    'thumbs_down',
+    'face_with_symbols_on_mouth',
+    'money_with_wings',
+  ];
+
+  allAllowedReviews = this.allowedReviews.concat(['pile_of_poo']);
+
+  get finalAllowedReviews() {
+    if (this.countryName === 'Russian Federation') {
+      const items = this.allowedReviews.slice();
+      items[4] = 'pile_of_poo';
+      return items;
+    }
+    return this.allowedReviews;
+  }
 
   mode: 'INITIAL' | 'SCAN' | 'FOUND' = 'INITIAL';
 
@@ -46,7 +76,11 @@ export class HomePage implements OnInit {
     return this.mode === 'FOUND';
   }
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private modal: ModalController,
+    private routerOutlet: IonRouterOutlet
+  ) {}
 
   async ngOnInit() {
     const config = (await this.getConfig()) ?? gs1Codes;
@@ -58,6 +92,10 @@ export class HomePage implements OnInit {
     try {
       this.barcode = '0000000000000';
       JsBarcode('#barcode', this.barcode, {
+        format: 'EAN13',
+        valid: () => true,
+      });
+      JsBarcode('#barcode2', this.barcode, {
         format: 'EAN13',
         valid: () => true,
       });
@@ -90,7 +128,20 @@ export class HomePage implements OnInit {
     this.loadConfig();
   }
 
+  async onSignIn() {
+    const modal = await this.modal.create({
+      presentingElement: this.routerOutlet.nativeEl,
+      component: EmailVerificationPage,
+      swipeToClose: true,
+    });
+
+    modal.present();
+  }
+
   async scan() {
+    this.isReviewCompleted = false;
+    this.selectedReview = '';
+
     const pr = await Camera.requestPermissions({ permissions: ['camera'] });
     console.log('permission result', pr);
 
@@ -124,6 +175,9 @@ export class HomePage implements OnInit {
       if (this.barcode.length === 13 || this.barcode.length === 8) {
         try {
           JsBarcode('#barcode', this.barcode, {
+            format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
+          });
+          JsBarcode('#barcode2', this.barcode, {
             format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
           });
         } catch (err) {
@@ -161,12 +215,19 @@ export class HomePage implements OnInit {
     BarcodeScanner.showBackground();
     BarcodeScanner.stopScan();
     document.body.classList.remove('qrscanner');
+    this.isReviewCompleted = false;
+    this.selectedReview = '';
+    this.productName = '';
 
     try {
-      this.countryName = "Scan Product's";
+      this.countryName = 'Scan Product';
 
       this.barcode = '0000000000000';
       JsBarcode('#barcode', this.barcode, {
+        format: 'EAN13',
+        valid: () => true,
+      });
+      JsBarcode('#barcode2', this.barcode, {
         format: 'EAN13',
         valid: () => true,
       });
@@ -229,6 +290,9 @@ export class HomePage implements OnInit {
 
       const url = 'https://server.jok.io/scans';
 
+      this.summaryItems = [];
+      this.productName = '';
+
       const result = await fetch(url, {
         method: 'POST',
         headers: {
@@ -268,10 +332,100 @@ export class HomePage implements OnInit {
         this.dataService.reqSessionId = data.reqSessionId;
       }
 
+      if (data.reviews) {
+        this.summaryItems = data.reviews.filter((x) =>
+          this.allAllowedReviews.includes(x.code)
+        );
+      }
+
+      if (data.productName) {
+        this.productName = data.productName;
+      }
+
       Storage.set({ key: 'SHOW_MORE_INFO', value: data.show ? '1' : '0' });
     } catch (err) {
       console.warn('api call error', err.toString());
       this.showMoreInfoButton = false;
+    }
+  }
+
+  async sendReview(review: string) {
+    const jsConfetti = new JSConfetti();
+
+    let emoji = '';
+
+    switch (review) {
+      case 'thumbs_up':
+        emoji = '👍';
+        break;
+
+      case 'sparkling_heart':
+        emoji = '❤️';
+        break;
+
+      case 'relieved_face':
+        emoji = '😌';
+        break;
+
+      case 'thinking_face':
+        emoji = '🤔';
+        break;
+
+      case 'exploding_head':
+        emoji = '🤯';
+        break;
+
+      case 'pleading_face':
+        emoji = '🥺';
+        break;
+
+      case 'thumbs_down':
+        emoji = '👎';
+        break;
+
+      case 'face_with_symbols_on_mouth':
+        emoji = '🤬';
+        break;
+
+      case 'money_with_wings':
+        emoji = '💸';
+        break;
+
+      case 'pile_of_poo':
+        emoji = '💩';
+        break;
+    }
+
+    jsConfetti
+      .addConfetti({
+        emojis: [emoji],
+        emojiSize: 100,
+        confettiNumber: 30,
+      })
+      .then(() => jsConfetti.clearCanvas);
+
+    this.isReviewCompleted = true;
+    this.selectedReview = review;
+
+    try {
+      const url = 'https://server.jok.io/scan-review-product';
+      const deviceId = await this.dataService.getDeviceId();
+
+      const result = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret: environment.secret,
+          deviceId,
+          productId: this.barcode,
+          review,
+          emoji,
+        }),
+      }).then((x) => x);
+    } catch (err) {
+      console.log(err);
     }
   }
 }

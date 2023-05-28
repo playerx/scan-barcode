@@ -1,0 +1,7 @@
+db.scan.products.find({
+  _id: "8699569350071",
+});
+
+db.scan.products.find({
+  reviews: { $exists: true },
+});

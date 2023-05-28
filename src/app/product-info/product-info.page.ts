@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Browser } from '@capacitor/browser';
 import { getBarcodeData } from 'src/domain/getBarcodeData';
-import { jsonToRenderItems, RenderItem } from 'src/domain/jsonToRenderItems';
+import { RenderItem, jsonToRenderItems } from 'src/domain/jsonToRenderItems';
 import { environment } from 'src/environments/environment';
 import { DataService } from '../services/data.service';
-import { Browser } from '@capacitor/browser';
 
 declare let grecaptcha: any;
 declare let JsBarcode: any;
@@ -79,8 +79,6 @@ export class ProductInfoPage implements OnInit, AfterViewInit {
         this.dataService.reqCookie,
         this.dataService.reqSessionId
       );
-
-      console.log(info);
 
       this.productItems = jsonToRenderItems(info.gepirItem?.itemDataLine ?? {});
       this.infoItems = jsonToRenderItems(info.gepirParty?.partyDataLine ?? {});

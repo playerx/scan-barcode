@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-title>
+      Sign In
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon slod="icon-only"
+                  name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding"
+             color="always-light">
+  <section *ngIf="!isGlobalLoading"
+           class="centered">
+    <ion-list>
+      <ion-item color="always-light">
+        <div tabindex="0"></div>
+        <ion-label position="stacked">
+          Email
+        </ion-label>
+        <ion-input #EmailInput
+                   type="email"
+                   placeholder="Please enter your email"
+                   (keyup)="onEmailKeyUp($event)"
+                   [readonly]="isVerifyMode || isLoading"
+                   [(ngModel)]="email"></ion-input>
+      </ion-item>
+    </ion-list>
+    <br />
+    <ion-button *ngIf="!isVerifyMode"
+                color="secondary"
+                expand="block"
+                [disabled]="!email || isLoading"
+                (click)="sendVerification()">
+      Send Verification Code
+    </ion-button>
+
+    <ng-container *ngIf="isVerifyMode">
+      <ion-list>
+        <ion-item color="always-light">
+          <div tabindex="0"></div>
+          <ion-label position="stacked">
+            Code
+          </ion-label>
+          <ion-input type="number"
+                     placeholder="Enter verification code"
+                     (keyup)="onCodeKeyUp($event)"
+                     [readonly]="isLoading"
+                     [(ngModel)]="code"></ion-input>
+        </ion-item>
+      </ion-list>
+      <br />
+
+      <ion-button color="secondary"
+                  expand="block"
+                  [disabled]="!code || isLoading"
+                  (click)="complete()">
+        Verify
+      </ion-button>
+      <ng-container *ngIf="isMobileApp">
+        <br />
+        <!-- <ion-button color="secondary"
+                    expand="block"
+                    [disabled]="isLoading"
+                    (click)="openMailbox()">
+          <ion-icon name="mail-outline"
+                    class="mailboxIcon"></ion-icon>
+          Open Mailbox
+        </ion-button> -->
+      </ng-container>
+    </ng-container>
+  </section>
+
+  <section *ngIf="isGlobalLoading"
+           class="globalLoading">
+    <ion-spinner color="light"
+                 name="crescent"></ion-spinner>
+  </section>
+</ion-content>
