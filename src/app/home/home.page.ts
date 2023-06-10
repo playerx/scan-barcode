@@ -132,7 +132,7 @@ export class HomePage implements OnInit {
     const modal = await this.modal.create({
       presentingElement: this.routerOutlet.nativeEl,
       component: EmailVerificationPage,
-      swipeToClose: true,
+      // swipeToClose: true,
     });
 
     modal.present();
