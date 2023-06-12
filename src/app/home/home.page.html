@@ -11,9 +11,7 @@
 </ion-header> -->
 
 <ion-content [fullscreen]="true"
-             [class.scanMode]="isScanMode"
-             [class.good]="isGood"
-             [class.bad]="isBad">
+             [class.scanMode]="isScanMode()">
   <!-- <ion-header *ngIf="isInitialMode" collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Scan Product</ion-title>
@@ -37,17 +35,15 @@
         Scan
       </ion-button>
     </section> -->
-    <section *ngIf="isScanMode"
+    <section *ngIf="isScanMode()"
              class="scanArea">Locate the Barcode</section>
 
-    <section [class.ion-hide]="!isInitialMode"
+    <section [class.ion-hide]="!isInitialMode()"
              class="ion-text-center">
-      <h2>{{ countryName }}</h2>
-      <div class="flag">{{ flag }}</div>
-
-      <div [class.ion-hide]="!barcode">
+      <h2>{{ 'Scan Product' }}</h2>
+      <div>
         <svg id="barcode"
-             [class.isLong]="barcode?.length === 13"></svg>
+             [class.isLong]="barcode()?.length === 13"></svg>
       </div>
       <!--
       <div *ngIf="imageUrl"
@@ -57,22 +53,21 @@
 
     </section>
 
-    <section [class.ion-hide]="!isFoundMode"
+    <section [class.ion-hide]="!isFoundMode()"
              class="ion-text-center ion-padding foundSection">
       <ion-card class="foundItem">
         <ion-card-header class="ion-text-left">
-          <ion-card-title>{{ productName }} {{ flag }}</ion-card-title>
-          <ion-card-subtitle>{{ countryName }}</ion-card-subtitle>
+          <ion-card-title>{{ productName() }} {{ flag() }}</ion-card-title>
+          <ion-card-subtitle>{{ countryName() }}</ion-card-subtitle>
         </ion-card-header>
 
         <ion-card-content>
           <svg id="barcode2"
-               [class.isLong]="barcode?.length === 13"></svg>
+               [class.isLong]="barcode()?.length === 13"></svg>
 
-
-          <div *ngIf="imageUrl"
+          <div *ngIf="productImageUrl()"
                class="image">
-            <img [src]="imageUrl" />
+            <img [src]="productImageUrl()" />
           </div>
         </ion-card-content>
         <ion-footer>
@@ -86,7 +81,8 @@
         </ion-footer>
       </ion-card>
 
-      <div *ngIf="!isReviewCompleted"
+
+      <div *ngIf="mode() == 'FOUND' && !isReviewCompleted()"
            class="feedbackContainer">
         <!-- <div class="productName">Product</div> -->
 
@@ -95,7 +91,7 @@
           <!-- Feedback: -->
         </div>
         <div>
-          <ion-button *ngFor="let item of finalAllowedReviews"
+          <ion-button *ngFor="let item of allowedReviews()"
                       class="feedbackButton"
                       fill="clear"
                       (click)="sendReview(item)">
@@ -105,11 +101,11 @@
       </div>
     </section>
 
-    <section *ngIf="isReviewCompleted"
+    <section *ngIf="mode() == 'FOUND' && isReviewCompleted()"
              class="successfullReview ion-padding-horizontal">
       <div>
 
-        <img [src]="'/assets/emotions/'+selectedReview+'.gif'"
+        <img [src]="'/assets/emotions/'+selectedReview()+'.gif'"
              alt="success"
              class="checkmark" />
         <img src="/assets/emotions/check_mark_button_once.gif"
@@ -124,27 +120,27 @@
 </ion-content>
 
 <ion-footer class="ion-text-center">
-  <ion-button *ngIf="isFoundMode || isInitialMode"
+  <ion-button *ngIf="isFoundMode() || isInitialMode()"
               color="primary"
               size="large"
               (click)="scan()">
     <ion-icon slog="start"
               class="scan"
               src="/assets/scan-outline.svg"></ion-icon>
-    <span *ngIf="isInitialMode">Scan</span>
-    <span *ngIf="!isInitialMode">Scan New</span>
+    <span *ngIf="isInitialMode()">Scan</span>
+    <span *ngIf="!isInitialMode()">Scan New</span>
   </ion-button>
-  <ion-button *ngIf="isScanMode"
+  <ion-button *ngIf="isScanMode()"
               color="light"
               size="large"
               (click)="cancel()">
     Cancel
   </ion-button>
-  <ion-button *ngIf="isFoundMode && showMoreInfoButton"
+  <ion-button *ngIf="isFoundMode() && showMoreInfoButton()"
               color="accent"
               size="large"
-              [routerLink]="['/product', barcode]"
-              [disabled]="!allowMoreInfo">
+              [routerLink]="['/product', barcode()]"
+              [disabled]="!allowMoreInfo()">
     <ion-icon slot="start"
               name="information-circle-outline"></ion-icon>
     More Info

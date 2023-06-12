@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, effect, signal } from '@angular/core';
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -23,23 +23,85 @@ declare let JsBarcode: any;
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  itemsMap: Map<string, any>;
+  barcode = signal('');
 
-  countryName = 'Scan Product';
-  productName = '';
-  barcode: string = '';
-  flag: string;
-  imageUrl: string;
-  isGood = false;
-  isBad = false;
-  isReviewCompleted = false;
-  selectedReview: string;
-  allowMoreInfo = true;
-  showMoreInfoButton = false;
+  barcodePrefix = computed(() => {
+    const barcodeValue = this.barcode();
+    if (!barcodeValue) {
+      return '';
+    }
+
+    const barCodePrefix = barcodeValue.slice(0, 3);
+
+    return barCodePrefix;
+  });
+
+  countryName = computed(() => {
+    const barcodePrefixValue = this.barcodePrefix();
+
+    if (!barcodePrefixValue) {
+      return 'Scan Product';
+    }
+
+    const item = this.itemsMap.get(barcodePrefixValue);
+    if (!item?.country) {
+      return 'Unknown Country';
+    }
+
+    return item.country;
+  });
+
+  flag = computed(() => {
+    const barcodePrefixValue = this.barcodePrefix();
+
+    if (!barcodePrefixValue) {
+      return '';
+    }
+
+    const item = this.itemsMap.get(barcodePrefixValue);
+    if (!item?.flag) {
+      return '';
+    }
+
+    return item.flag;
+  });
+
+  productName = signal('');
+
+  productImageUrl = computed(() => {
+    const barcodePrefixValue = this.barcodePrefix();
+
+    if (!barcodePrefixValue) {
+      return '';
+    }
+
+    const item = this.itemsMap.get(barcodePrefixValue);
+
+    return item?.imageUrl2 ?? item?.imageUrl ?? '';
+  });
+
+  showMoreInfoButton = signal<boolean>(null);
+  allowMoreInfo = signal(true);
+
+  selectedReview = signal('');
+
+  isReviewCompleted = computed(() => !!this.selectedReview());
+
+  allowedReviews = computed(() => {
+    if (this.countryName() === 'Russian Federation') {
+      const items = this.reviewEmotions.slice();
+      items[4] = 'pile_of_poo';
+      return items;
+    }
+
+    return this.reviewEmotions;
+  });
+
+  itemsMap: Map<string, any>;
 
   summaryItems = [];
 
-  allowedReviews = [
+  reviewEmotions = [
     'thumbs_up',
     'sparkling_heart',
     'relieved_face',
@@ -51,58 +113,126 @@ export class HomePage implements OnInit {
     'money_with_wings',
   ];
 
-  allAllowedReviews = this.allowedReviews.concat(['pile_of_poo']);
+  allAllowedReviews = this.reviewEmotions.concat(['pile_of_poo']);
 
-  get finalAllowedReviews() {
-    if (this.countryName === 'Russian Federation') {
-      const items = this.allowedReviews.slice();
-      items[4] = 'pile_of_poo';
-      return items;
-    }
-    return this.allowedReviews;
-  }
+  mode = signal<'INITIAL' | 'SCAN' | 'FOUND'>('INITIAL');
 
-  mode: 'INITIAL' | 'SCAN' | 'FOUND' = 'INITIAL';
-
-  get isInitialMode() {
-    return this.mode === 'INITIAL';
-  }
-
-  get isScanMode() {
-    return this.mode === 'SCAN';
-  }
-
-  get isFoundMode() {
-    return this.mode === 'FOUND';
-  }
+  isInitialMode = computed(() => this.mode() === 'INITIAL');
+  isScanMode = computed(() => this.mode() === 'SCAN');
+  isFoundMode = computed(() => this.mode() === 'FOUND');
 
   constructor(
     private dataService: DataService,
     private modal: ModalController,
     private routerOutlet: IonRouterOutlet
-  ) {}
+  ) {
+    effect(() => {
+      try {
+        const barcodeValue = this.barcode() || '0000000000000';
+
+        if (barcodeValue.length === 13 || barcodeValue.length === 8) {
+          JsBarcode('#barcode', barcodeValue, {
+            format: barcodeValue.length === 13 ? 'EAN13' : 'EAN8',
+            valid: () => true,
+          });
+          JsBarcode('#barcode2', barcodeValue, {
+            format: barcodeValue.length === 13 ? 'EAN13' : 'EAN8',
+            valid: () => true,
+          });
+        } else {
+          // TODO: clear barcode
+        }
+      } catch (err) {
+        alert(err.toString());
+        console.warn(err);
+      }
+    });
+
+    effect(() => {
+      const value = this.showMoreInfoButton();
+      if (value === null) {
+        return;
+      }
+
+      Storage.set({ key: 'SHOW_MORE_INFO', value: value ? '1' : '0' });
+    });
+  }
 
   async ngOnInit() {
-    const config = (await this.getConfig()) ?? gs1Codes;
+    this.barcode.set('');
 
-    this.showMoreInfoButton = await Storage.get({ key: 'SHOW_MORE_INFO' }).then(
-      (x) => x.value == '1'
+    this.showMoreInfoButton.set(
+      await Storage.get({ key: 'SHOW_MORE_INFO' }).then((x) => x.value == '1')
     );
 
-    try {
-      this.barcode = '0000000000000';
-      JsBarcode('#barcode', this.barcode, {
-        format: 'EAN13',
-        valid: () => true,
-      });
-      JsBarcode('#barcode2', this.barcode, {
-        format: 'EAN13',
-        valid: () => true,
-      });
-    } catch (err) {
-      console.warn(err.toString());
+    const config = (await this.getConfig()) ?? gs1Codes;
+
+    this.initMap(config);
+
+    this.loadConfigFromServer();
+  }
+
+  async onSignIn() {
+    const modal = await this.modal.create({
+      presentingElement: this.routerOutlet.nativeEl,
+      component: EmailVerificationPage,
+      // swipeToClose: true,
+    });
+
+    modal.present();
+  }
+
+  async scan() {
+    this.selectedReview.set('');
+
+    const pr = await Camera.requestPermissions({ permissions: ['camera'] });
+    console.log('permission result', pr);
+
+    if (pr.camera !== 'granted') {
+      alert('Please enable camera permission from Settings');
+      return;
     }
 
+    this.barcode.set('');
+    this.mode.set('SCAN');
+
+    BarcodeScanner.hideBackground();
+    document.body.classList.add('qrscanner');
+
+    const result = await BarcodeScanner.startScan({
+      targetedFormats: [SupportedFormat.EAN_13, SupportedFormat.EAN_8],
+    }); // start scanning and wait for a result
+
+    console.log('result', result);
+    document.body.classList.remove('qrscanner');
+    this.mode.set('FOUND');
+
+    // if the result has content
+    if (result.hasContent) {
+      this.barcode.set(result.content);
+
+      Haptics.vibrate({ duration: 100 });
+
+      this.sendData(this.barcode(), true, !!this.flag(), this.countryName());
+    } else {
+      this.barcode.set('');
+
+      this.sendData(this.barcode(), false, false, this.countryName());
+    }
+  }
+
+  cancel() {
+    this.mode.set('INITIAL');
+    BarcodeScanner.showBackground();
+    BarcodeScanner.stopScan();
+    document.body.classList.remove('qrscanner');
+    this.selectedReview.set('');
+    this.productName.set('');
+
+    this.barcode.set('');
+  }
+
+  private initMap(config: any) {
     this.itemsMap = config
       .filter((x) => x.barcode)
       .flatMap((x) => {
@@ -124,119 +254,9 @@ export class HomePage implements OnInit {
         }));
       })
       .reduce((r, x) => r.set(x.barcode, x), new Map());
-
-    this.loadConfig();
   }
 
-  async onSignIn() {
-    const modal = await this.modal.create({
-      presentingElement: this.routerOutlet.nativeEl,
-      component: EmailVerificationPage,
-      // swipeToClose: true,
-    });
-
-    modal.present();
-  }
-
-  async scan() {
-    this.isReviewCompleted = false;
-    this.selectedReview = '';
-
-    const pr = await Camera.requestPermissions({ permissions: ['camera'] });
-    console.log('permission result', pr);
-
-    if (pr.camera !== 'granted') {
-      alert('Please enable camera permission from Settings');
-      return;
-    }
-
-    this.countryName = '';
-    this.barcode = '';
-    this.flag = '';
-    this.imageUrl = '';
-    this.mode = 'SCAN';
-    this.isGood = false;
-    this.isBad = false;
-
-    BarcodeScanner.hideBackground();
-    document.body.classList.add('qrscanner');
-
-    const result = await BarcodeScanner.startScan({
-      targetedFormats: [SupportedFormat.EAN_13, SupportedFormat.EAN_8],
-    }); // start scanning and wait for a result
-
-    console.log('result', result);
-    document.body.classList.remove('qrscanner');
-    this.mode = 'FOUND';
-
-    // if the result has content
-    if (result.hasContent) {
-      this.barcode = result.content;
-      if (this.barcode.length === 13 || this.barcode.length === 8) {
-        try {
-          JsBarcode('#barcode', this.barcode, {
-            format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
-          });
-          JsBarcode('#barcode2', this.barcode, {
-            format: this.barcode.length === 13 ? 'EAN13' : 'EAN8',
-          });
-        } catch (err) {
-          console.warn(err.toString());
-        }
-      }
-
-      const barCodePrefix = this.barcode.slice(0, 3);
-
-      console.log(this.barcode, barCodePrefix, this.itemsMap.has(this.barcode));
-
-      const item = this.itemsMap.get(barCodePrefix);
-
-      this.countryName = item?.country ?? 'Unknown Country';
-      this.flag = item?.flag ?? '';
-      this.imageUrl = item?.imageUrl2 ?? item?.imageUrl ?? '';
-
-      this.isGood = true;
-
-      Haptics.vibrate({ duration: 100 });
-
-      console.log('barcode', result.content); // log the raw scanned content
-
-      this.sendData(this.barcode, true, !!this.flag, this.countryName);
-    } else {
-      this.countryName = 'Unknown Country';
-      this.barcode = '';
-
-      this.sendData(this.barcode, false, false, this.countryName);
-    }
-  }
-
-  cancel() {
-    this.mode = 'INITIAL';
-    BarcodeScanner.showBackground();
-    BarcodeScanner.stopScan();
-    document.body.classList.remove('qrscanner');
-    this.isReviewCompleted = false;
-    this.selectedReview = '';
-    this.productName = '';
-
-    try {
-      this.countryName = 'Scan Product';
-
-      this.barcode = '0000000000000';
-      JsBarcode('#barcode', this.barcode, {
-        format: 'EAN13',
-        valid: () => true,
-      });
-      JsBarcode('#barcode2', this.barcode, {
-        format: 'EAN13',
-        valid: () => true,
-      });
-    } catch (err) {
-      console.warn(err.toString());
-    }
-  }
-
-  private async loadConfig() {
+  private async loadConfigFromServer() {
     try {
       const data = await fetch('https://server.jok.io/gs1-codes').then((x) =>
         x.json()
@@ -253,6 +273,8 @@ export class HomePage implements OnInit {
       await Storage.set({ key: 'config', value: JSON.stringify(data) });
 
       console.log('config updated successfully', data.length);
+
+      this.initMap(data);
     } catch (err) {
       console.warn(err.toString());
     }
@@ -282,7 +304,7 @@ export class HomePage implements OnInit {
     productCountry: string
   ) {
     try {
-      this.allowMoreInfo = false;
+      this.allowMoreInfo.set(false);
       const deviceId = await this.dataService.getDeviceId();
       const info = await Device.getInfo();
 
@@ -291,7 +313,7 @@ export class HomePage implements OnInit {
       const url = 'https://server.jok.io/scans';
 
       this.summaryItems = [];
-      this.productName = '';
+      this.productName.set('');
 
       const result = await fetch(url, {
         method: 'POST',
@@ -317,11 +339,11 @@ export class HomePage implements OnInit {
 
       console.log('received response', data);
 
-      this.showMoreInfoButton = data.show;
-      this.allowMoreInfo = true;
+      this.showMoreInfoButton.set(data.show);
+      this.allowMoreInfo.set(true);
 
       if (data.info) {
-        this.dataService.scannedProductInfo.set(this.barcode, data.info);
+        this.dataService.scannedProductInfo.set(this.barcode(), data.info);
       }
 
       if (data.reqCookie) {
@@ -339,13 +361,11 @@ export class HomePage implements OnInit {
       }
 
       if (data.productName) {
-        this.productName = data.productName;
+        this.productName.set(data.productName);
       }
-
-      Storage.set({ key: 'SHOW_MORE_INFO', value: data.show ? '1' : '0' });
     } catch (err) {
       console.warn('api call error', err.toString());
-      this.showMoreInfoButton = false;
+      this.showMoreInfoButton.set(false);
     }
   }
 
@@ -404,8 +424,7 @@ export class HomePage implements OnInit {
       })
       .then(() => jsConfetti.clearCanvas);
 
-    this.isReviewCompleted = true;
-    this.selectedReview = review;
+    this.selectedReview.set(review);
 
     try {
       const url = 'https://server.jok.io/scan-review-product';
